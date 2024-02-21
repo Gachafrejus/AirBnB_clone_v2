@@ -1,74 +1,58 @@
 #!/usr/bin/python3
-"""
-Flask Web Application Documentation
-"""
+"""Starts a application.
 
-# Import the Flask module
-from flask import Flask, escape
+listens on 0.0.0.0, port 5000.
+Routes:
+    /: Show 'Hello HBNB!'.
+    /hbnb: Show 'HBNB'.
+    /c/<text>: Show 'C' followed by the value of <text>.
+    /python/(<text>): Show 'Python' followed by the value of <text>.
+    /number/<n>: Show 'n is a number' only if <n> is an integer.
+"""
+from flask import Flask
+from flask import abort
 
-# Create a Flask web application instance
 app = Flask(__name__)
 
 
-# Define a route for the root URL ("/") with the strict_slashes to False
-@app.route('/', strict_slashes=False)
+@app.route("/", strict_slashes=False)
 def hello_hbnb():
-    """
-    Route Handler: hello_hbnb
-
-    This function is the handler for the root URL ("/"). When a user accesses
-    the root URL, it returns a simple "Hello HBNB!" message.
-
-    :return: A string message, "Hello HBNB!"
-    """
+    """Show 'Hello HBNB!'."""
     return "Hello HBNB!"
 
 
-@app.route('/hbnb', strict_slashes=False)
+@app.route("/hbnb", strict_slashes=False)
 def hbnb():
-    """
-    Handle root = hbnb
-    when a clent acces the root it returns a message "HBNB"
-
-    :return: A message string "HBNB
-    """
+    """Show 'HBNB'."""
     return "HBNB"
 
 
-@app.route('/c/<text>', strict_slashes=False)
-def text(text):
+@app.route("/c/<text>", strict_slashes=False)
+def c(text):
+    """Show 'C' followed by the value of <text>.
+
+    Replaces any underscores in <text> with slashes.
     """
-    Handle root = text
-    when a clent acces the root it returns a message "HBNB"
+    text = text.replace("_", " ")
+    return "C {}".format(text)
 
-    :return: A message string "{text}"
+
+@app.route("/python", strict_slashes=False)
+@app.route("/python/<text>", strict_slashes=False)
+def python(text="is cool"):
+    """Show 'Python' followed by the value of <text>.
+
+    Replaces any underscores in <text> with slashes.
     """
-    text = escape(text).replace('_', ' ')
-    return f"C {text}"
+    text = text.replace("_", " ")
+    return "Python {}".format(text)
 
 
-@app.route('/python/', defaults={'text': 'is cool'}, strict_slashes=False)
-@app.route('/python/<text>', strict_slashes=False)
-def python_text(text="is cool"):
-    """
-    Handle root = text
-    when a clent acces the root it returns a message "{text}"
-    or {default_msg} if there's no
-
-    :return: A message string "{text}"
-    """
-    text = escape(text).replace('_', ' ')
-    return f"Python {text}"
+@app.route("/number/<int:n>", strict_slashes=False)
+def number(n):
+    """Show 'n is a number' only if n is an integer."""
+    return "{} is a number".format(n)
 
 
-@app.route('/number/<int:n>', strict_slashes=False)
-def is_number(n):
-    if isinstance(n, int):
-        return f"{n} is a number"
-    else:
-        return "Not Found", 404
-
-
-# Entry point to run the Flask application
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0")
