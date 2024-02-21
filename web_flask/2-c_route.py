@@ -1,52 +1,35 @@
 #!/usr/bin/python3
-"""
-Flask Web Application Documentation
-"""
+"""Starts a application.
 
-# Import the Flask module
-from flask import Flask, escape
+The application listens on 0.0.0.0, port 5000.
+Routes:
+    /: show 'Hello HBNB!'.
+    /hbnb: show 'HBNB'.
+    /c/<text>: show 'C' followed by the value of <text>.
+"""
+from flask import Flask
 
-# Create a Flask web application instance
 app = Flask(__name__)
 
 
-# Define a route for the root URL ("/") with the strict_slashes to False
-@app.route('/', strict_slashes=False)
+@app.route("/", strict_slashes=False)
 def hello_hbnb():
-    """
-    Route Handler: hello_hbnb
-
-    This function is the handler for the root URL ("/"). When a user accesses
-    the root URL, it returns a simple "Hello HBNB!" message.
-
-    :return: A string message, "Hello HBNB!"
-    """
+    """show 'Hello HBNB!'."""
     return "Hello HBNB!"
 
 
-@app.route('/hbnb', strict_slashes=False)
+@app.route("/hbnb", strict_slashes=False)
 def hbnb():
-    """
-    Handle root = hbnb
-    when a clent acces the root it returns a message "HBNB"
-
-    :return: A message string "HBNB
-    """
+    """show 'HBNB'."""
     return "HBNB"
 
 
-@app.route('/c/<text>', strict_slashes=False)
-def text(text):
-    """
-    Handle root = text
-    when a clent acces the root it returns a message "HBNB"
-
-    :return: A message string "{text}"
-    """
-    text = escape(text).replace('_', ' ')
-    return f"C {text}"
+@app.route("/c/<text>", strict_slashes=False)
+def c(text):
+    """show 'C' followed by the value of <text>."""
+    text = text.replace("_", " ")
+    return "C {}".format(text)
 
 
-# Entry point to run the Flask application
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0")
