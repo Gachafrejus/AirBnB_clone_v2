@@ -1,108 +1,82 @@
 #!/usr/bin/python3
-"""
-Flask Web Application Documentation
-"""
+"""Starts application.
 
-# Import the Flask module
-from flask import Flask, escape, render_template
+listens on 0.0.0.0, port 5000.
+Routes:
+    /: Show 'Hello HBNB!'.
+    /hbnb: Show 'HBNB'.
+    /c/<text>: Show 'C' followed by the value of <text>.
+    /python/(<text>): Show 'Python' followed by the value of <text>.
+    /number/<n>: Show 'n is a number' only if <n> is an integer.
+    /number_template/<n>: Show an HTML page only if <n> is an integer.
+        - Show the value of <n> in the body.
+    /number_odd_or_even/<n>: Show an HTML page only if <n> is an integer.
+        - States whether <n> is even or odd in the body.
+"""
+from flask import Flask
+from flask import render_template
 
-# Create a Flask web application instance
 app = Flask(__name__)
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 
-# Define a route for the root URL ("/") with the strict_slashes to False
-@app.route('/', strict_slashes=False)
+@app.route("/", strict_slashes=False)
 def hello_hbnb():
-    """
-    Route Handler: hello_hbnb
-
-    This function is the handler for the root
-    URL ("/"). When a user accesses
-    the root URL, it returns a simple "Hello HBNB!" message.
-
-    :return: A string message, "Hello HBNB!"
-    """
+    """Show 'Hello HBNB!'"""
     return "Hello HBNB!"
 
 
-@app.route('/hbnb', strict_slashes=False)
+@app.route("/hbnb", strict_slashes=False)
 def hbnb():
-    """
-    Handle root = hbnb
-    when a clent acces the root it returns a message "HBNB"
-
-    :return: A message string "HBNB
-    """
+    """Show 'HBNB'"""
     return "HBNB"
 
 
-@app.route('/c/<text>', strict_slashes=False)
-def text(text):
+@app.route("/c/<text>", strict_slashes=False)
+def c(text):
+    """Show 'C' followed by the value of <text>
+
+    Replaces any underscores in <text> with slashes.
     """
-    Handle root = text
-    when a clent acces the root it returns a message "HBNB"
+    text = text.replace("_", " ")
+    return "C {}".format(text)
 
-    :return: A message string "{text}"
+
+@app.route("/python", strict_slashes=False)
+@app.route("/python/<text>", strict_slashes=False)
+def python(text="is cool"):
+    """Show 'Python' followed by the value of <text>
+
+    Replaces any underscores in <text> with slashes.
     """
-    text = escape(text).replace('_', ' ')
-    return f"C {text}"
+    text = text.replace("_", " ")
+    return "Python {}".format(text)
 
 
-@app.route('/python/', defaults={'text': 'is cool'}, strict_slashes=False)
-@app.route('/python/<text>', strict_slashes=False)
-def python_text(text="is cool"):
+@app.route("/number/<int:n>", strict_slashes=False)
+def number(n):
+    """Show 'n is a number' only if <n> is an integer."""
+    return "{} is a number".format(n)
+
+
+@app.route("/number_template/<int:n>", strict_slashes=False)
+def number_template(n):
+    """Show an HTML page only if <n> is an integer.
+
+    Show the value of <n> in the body.
     """
-    Handle root = text
-    when a clent acces the root it returns a message "{text}"
-    or {default_msg} if there's no
+    return render_template("5-number.html", n=n)
 
-    :return: A message string "{text}"
+
+@app.route("/number_odd_or_even/<int:n>", strict_slashes=False)
+def number_odd_or_even(n):
+    """Show an HTML page only if <n> is an integer.
+
+    States whether <n> is odd or even in the body.
     """
-    text = escape(text).replace('_', ' ')
-    return f"Python {text}"
+    return render_template("6-number_odd_or_even.html", n=n)
 
 
-@app.route('/number/<int:n>', strict_slashes=False)
-def is_number(n):
-    if isinstance(n, int):
-        return f"{n} is a number"
-    else:
-        return "Not Found", 404
-
-
-@app.route('/number_template/<int:n>', strict_slashes=False)
-def temp_render(n):
-    """
-    Route Handler: is_number
-
-    This function is the handler for the '/number_template/<int:n>' route
-    in the Flask web application.
-    When a client accesses this route with an integer 'n', it
-    renders an HTML template named '5-number.html'
-    and passes the value of 'n' to the template using the 'n' parameter.
-
-    :param n: An integer value provided in the URL.
-    :return: An HTML page generated from the '5-number.html' template,
-    displaying "Number: n" where 'n' is the provided integer.
-    """
-    return render_template('5-number.html', n=n)
-
-
-@app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
-def is_or_or_even(n):
-    """
-    Route Handler: is_or_or_even
-
-    This function is the handler for the '/is_or_or_even/<int:n>'
-    """
-    if isinstance(n, int):
-        odd_or_even = "odd" if n % 2 != 0 else "even"
-        fil = '6-number_odd_or_even.html'
-        return render_template(fil, n=n, odd_or_even=odd_or_even)
-    else:
-        return "Not Found", 404
-
-
-# Entry point to run the Flask application
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0")
